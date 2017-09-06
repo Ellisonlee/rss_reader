@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context="l2y2.developer.rssreader.activity.MainActivity">
+    <item
+        android:id="@+id/action_add_feed"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/action_bar_add_feed"
+        app:showAsAction="always" />
+
+</menu>
