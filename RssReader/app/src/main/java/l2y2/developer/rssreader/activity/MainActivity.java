@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements RssUrlListAdapter
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 long id = (long) viewHolder.itemView.getTag();
                 removeGuest(id);
-                loadRssUrlData();
+                mUrlAdapter.swapCursor(getAllFeeds());
             }
         }).attachToRecyclerView(mRecyclerView);
     }
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements RssUrlListAdapter
 
     private void loadRssUrlData() {
         showTitleDataView();
-        HashMap<String, String> map = new HashMap<String, String>();
         Cursor cursor = getAllFeeds();
         if (cursor != null) {
             showTitleDataView();

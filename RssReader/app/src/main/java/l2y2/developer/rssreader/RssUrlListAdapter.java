@@ -75,7 +75,13 @@ public class RssUrlListAdapter extends RecyclerView.Adapter<RssUrlListAdapter.Rs
         }
     }
 
-
+    public void swapCursor(Cursor newCursor) {
+        if (mCursor != null) mCursor.close();
+        mCursor = newCursor;
+        if (newCursor != null) {
+            this.notifyDataSetChanged();
+        }
+    }
 
     public interface RssUrlListAdapterOnClickHandler {
         void onClick(String rssUrl);
