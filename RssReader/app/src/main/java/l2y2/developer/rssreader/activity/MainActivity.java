@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,6 +46,19 @@ public class MainActivity extends AppCompatActivity implements RssUrlListAdapter
         RssDBHelper dbHelper = new RssDBHelper(this);
         mDb = dbHelper.getWritableDatabase();
         loadRssUrlData();
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                long id = (long) viewHolder.itemView.getTag();
+                removeGuest(id);
+                loadRssUrlData();
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -57,17 +71,9 @@ public class MainActivity extends AppCompatActivity implements RssUrlListAdapter
         showTitleDataView();
         HashMap<String, String> map = new HashMap<String, String>();
         Cursor cursor = getAllFeeds();
-        for (int i = 0;i<cursor.getCount();i++){
-            if(cursor.moveToPosition(i))
-            {
-                String title = cursor.getString(cursor.getColumnIndex(RssReaderContract.RssReaderEntry.COLUMN_TITLE));
-                String url = cursor.getString(cursor.getColumnIndex(RssReaderContract.RssReaderEntry.COLUMN_RSS_URL));
-                map.put(title, url);
-            }
-        }
-        if (map != null) {
+        if (cursor != null) {
             showTitleDataView();
-            mUrlAdapter.setData(map);
+            mUrlAdapter.setData(cursor);
         } else {
             showErrorMessage();
         }
@@ -122,7 +128,12 @@ public class MainActivity extends AppCompatActivity implements RssUrlListAdapter
                 null,
                 null,
                 null,
-                RssReaderContract.RssReaderEntry.COLUMN_DATE
+                RssReaderContract.RssReaderEntry._ID,
+                null
         );
+    }
+
+    private boolean removeGuest(long id) {
+        return mDb.delete(RssReaderContract.RssReaderEntry.TABLE_NAME, RssReaderContract.RssReaderEntry._ID + "=" + id, null) > 0;
     }
 }
