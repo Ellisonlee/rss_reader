@@ -13,14 +13,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import l2y2.developer.rssreader.data.RssReaderContract;
+
 /**
  * Created by Lee on 2017/09/01.
  */
 
 public class RssUrlListAdapter extends RecyclerView.Adapter<RssUrlListAdapter.RssUrlListAdapterViewHolder>{
 
-    private HashMap<String, String> mMapData;
     private final RssUrlListAdapterOnClickHandler mClickHandler;
+    private Cursor mCursor;
 
     public RssUrlListAdapter(RssUrlListAdapterOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
@@ -37,19 +39,22 @@ public class RssUrlListAdapter extends RecyclerView.Adapter<RssUrlListAdapter.Rs
 
     @Override
     public void onBindViewHolder(RssUrlListAdapterViewHolder holder, int position) {
-        List keys = new ArrayList(mMapData.keySet());
-        String rssTitle = (String) keys.get(position);
+        if (!mCursor.moveToPosition(position))
+            return;
+        String rssTitle = mCursor.getString(mCursor.getColumnIndex(RssReaderContract.RssReaderEntry.COLUMN_TITLE));
         holder.rssUrlTextView.setText(rssTitle);
+        long id = mCursor.getLong(mCursor.getColumnIndex(RssReaderContract.RssReaderEntry._ID));
+        holder.itemView.setTag(id);
     }
 
-    public void setData(HashMap<String, String> map) {
-        mMapData = map;
+    public void setData(Cursor cursor) {
+        mCursor = cursor;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return mMapData.size();
+        return mCursor.getCount();
     }
 
     public class RssUrlListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -63,13 +68,20 @@ public class RssUrlListAdapter extends RecyclerView.Adapter<RssUrlListAdapter.Rs
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            List values = new ArrayList(mMapData.values());
-            String rssUrl = (String) values.get(adapterPosition);
+            if(!mCursor.moveToPosition(adapterPosition))
+                return;
+            String rssUrl = mCursor.getString(mCursor.getColumnIndex(RssReaderContract.RssReaderEntry.COLUMN_RSS_URL));
             mClickHandler.onClick(rssUrl);
         }
     }
 
-
+    public void swapCursor(Cursor newCursor) {
+        if (mCursor != null) mCursor.close();
+        mCursor = newCursor;
+        if (newCursor != null) {
+            this.notifyDataSetChanged();
+        }
+    }
 
     public interface RssUrlListAdapterOnClickHandler {
         void onClick(String rssUrl);
