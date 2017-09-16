@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class RssDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "rssFeed.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public RssDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -19,13 +19,25 @@ public class RssDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        final String SQL_CREATE_WEATHER_TABLE =
+        final String SQL_CREATE_RSS_TABLE =
             "CREATE TABLE " + RssReaderContract.RssReaderEntry.TABLE_NAME + " (" +
                 RssReaderContract.RssReaderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 RssReaderContract.RssReaderEntry.COLUMN_DATE + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "                 +
                 RssReaderContract.RssReaderEntry.COLUMN_TITLE + " VARCHAR(128) NOT NULL, " +
                 RssReaderContract.RssReaderEntry.COLUMN_RSS_URL + " TEXT NOT NULL" + ");";
-        db.execSQL(SQL_CREATE_WEATHER_TABLE);
+        final String SQL_CREATE_FEED_TABLE =
+            "CREATE TABLE " + FeedStatusContract.FeedStatusEntry.TABLE_NAME + " (" +
+                    FeedStatusContract.FeedStatusEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_DATE + " TIMESTAMP NOT NULL, "  +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_TITLE + " VARCHAR(128) NOT NULL, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_URL + " TEXT NOT NULL, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_FEED_URL_ID + " INTEGER(10) NOT NULL, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
+                    FeedStatusContract.FeedStatusEntry.COLUMN_IS_READ + " BOOLEAN NOT NULL DEFAULT FALSE" +
+                    ");";
+        db.execSQL(SQL_CREATE_RSS_TABLE);
+        db.execSQL(SQL_CREATE_FEED_TABLE);
     }
 
     @Override
