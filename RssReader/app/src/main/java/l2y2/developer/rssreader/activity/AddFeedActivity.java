@@ -40,12 +40,10 @@ public class AddFeedActivity extends AppCompatActivity {
                 boolean isVaild = checkUrlAndTitle();
                 if (isVaild)
                 {
-                    Log.e("test", "insert a data ");
                     addNewFeedURL(mTitle.getText().toString(), mUrl.getText().toString());
                     finish();
                 } else {
                     // TODO ADD a Toast here
-                    Log.e("test", "invaild string");
                 }
             }
         });
